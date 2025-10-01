@@ -1,3 +1,65 @@
+refresh_date = pd.Timestamp(pd.Timestamp.now(), tz="Asia/Jakarta")
+gcp_dataset = "ecomm_analytics"
+
+# (a) standard OMS columns
+
+default_data_warehouse_columns = [
+    # (i) order-level columns
+    "origin_name",
+    "origin_type",
+    "destination_name",
+    "destination_type",
+    "Retailer_Locations",
+    "Retailer_Segment",
+    "Retailer",
+    "Distributor",
+    "Use_Salesman",
+    "OrID",
+    "OrDatetime",
+    "order_date",
+    "OrStatus",
+    "cz_name",
+    "Salesman_name",
+    "cz_type",
+    "cz_province",
+    "wh_name",
+    "op_cancelled",
+    "op_returned",
+    # (ii) product-level columns
+    "OpPrSKU",
+    "OpPrSKU_Variation",
+    "OpPrName",
+    # (iii) Numeric columns like price and quantities
+    "OpQty",
+    "Op_price_original",
+    "Op_price_discounted",
+    "OpPricingDiscount",
+    "OpVoucherDiscount",
+    "OpVoucherCode",
+    "cz_uses_voucher",
+    "Op_topline_original",
+    "Op_topline_discounted",
+    "to_Rupiah_conversion",
+    # (iv) new columns defined in this script
+    "account",
+    "e_commerce_website",
+    "country_id",
+    "MBR_TS_Month",
+    "MBR_Cat_Month",
+    "MBR_Cat_Year",
+    "WBR_TS_Week",
+    "WBR_Cat_Week",
+    "WBR_Cat_Year",
+    "product_category",
+    "product_class",
+    "product_specification",
+    "packaging_type",
+    "pcs_per_packaging",
+    "Num_packaging_units_per_listing",
+    "brand_global",
+    "brand_product_specific",
+]
+
 def post_process_Offline_Sales_Gideon(df):
     """Convert columns for Offline Sales (GIDEON) dataset to CDL column names"""
 
@@ -130,6 +192,5 @@ def post_process_Offline_Sales_Gideon(df):
     df.loc[returned, "destination_name"] = "WH1"
     df.loc[returned, "destination_type"] = "DIST"
 
-    df["to_Rupiah_conversion"] = 1
-
     return df
+
