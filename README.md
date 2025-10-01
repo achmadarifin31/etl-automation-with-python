@@ -8,4 +8,4 @@ Key features include:
 - Storage and querying with Google BigQuery  
 - Interactive dashboard visualization using Looker Studio  
 
-Note: All sample data provided in this repository are dummy/simulated to ensure confidentiality.
+Note: All sample data provided in this repository are dummy/simulated to ensure confidentiality. All sheet IDs, project codes, and datasets in this repo are dummy values for demonstration purposes. No confidential company data is shared.
