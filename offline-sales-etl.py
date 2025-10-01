@@ -60,6 +60,13 @@ default_data_warehouse_columns = [
     "brand_product_specific",
 ]
 
+# (b) Read data directly from Google sheet. List is maintained by business stakeholders
+
+# (i) Keyword --> product category mapping
+default_keyword_product_mapping = read_from_Google_sheet(
+    "link_google_sheet", "google_sheet_name"
+)
+
 def post_process_Offline_Sales(df):
     """Convert columns for Offline Sales dataset to CDL column names"""
 
