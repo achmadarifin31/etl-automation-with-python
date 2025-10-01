@@ -16,7 +16,7 @@ import constants
 # (2) Set run parameters
 
 gcp_dataset = "offline_sales"
-refresh_date = pd.Timestamp(pd.Timestamp.now(), tz="Asia/Singapore")
+refresh_date = pd.Timestamp(pd.Timestamp.now(), tz="Asia/Indonesia")
 
 ###############################################################
 
@@ -57,8 +57,8 @@ if __name__ == "__main__":
 
     # Sell Offline
     main(
-        google_sheet_id="link sheet",
-        google_sheet_tab_name="name sheet",
+        google_sheet_id="link_sheet",
+        google_sheet_tab_name="name_sheet",
         project_cy_code=constants.gcp_country_code,
         project_dept_code=constants.gcp_dept_code,
         project_env_code="prod",
