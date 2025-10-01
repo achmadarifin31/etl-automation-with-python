@@ -261,3 +261,61 @@ def main(
     output = df[final_columns]
 
     return output
+
+#############################################################
+
+# (5) Convert data types
+
+# (a) Set all data types to string
+order_result = order_result.astype(str)
+
+# (b) Date and datetime formats
+order_result["order_date"] = pd.to_datetime(order_result["order_date"]).dt.date
+order_result["OrDatetime"] = pd.to_datetime(order_result["OrDatetime"])
+
+# # (c) Numeric columns
+for i in (
+    "OpQty",
+    "country_id",
+    "to_Rupiah_conversion",
+    "WBR_Cat_Week",
+    "MBR_Cat_Month",
+    "MBR_Cat_Year",
+    "WBR_Cat_Year",
+):
+    order_result = convert_column_type_to_numeric(order_result, i, int)
+
+for i in (
+    "Op_price_original",
+    "Op_price_discounted",
+    "OpPricingDiscount",
+    "OpVoucherDiscount",
+    "Op_topline_original",
+    "Op_topline_discounted",
+):
+    order_result = convert_column_type_to_numeric(order_result, i, float)
+
+# (d) additional column modifications
+order_result = add_repeat_flag(order_result)
+order_result = clean_province_name(order_result)
+
+####################################################################
+
+# (6) Upload cdl to GBQ
+
+project = (
+    "project-gcp-"
+    + constants.gcp_country_code
+    + "-"
+    + constants.gcp_dept_code_sales
+    + "-"
+    + "prod"
+)
+load_to_bigquery(
+    df=order_result,
+    project=project,
+    dataset=gcp_dataset,
+    table="cdl_offline_orders",
+    load_type="overwrite",
+    upload_date=refresh_date,
+)
