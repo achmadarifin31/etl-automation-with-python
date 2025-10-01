@@ -193,6 +193,7 @@ def post_process_Offline_Sales(df):
     df.loc[returned, "destination_type"] = "DIST"
 
     return df
+    
 def main(
     project_cy_code,
     project_dept_code,
