@@ -1,5 +1,5 @@
 refresh_date = pd.Timestamp(pd.Timestamp.now(), tz="Asia/Jakarta")
-gcp_dataset = "ecomm_analytics"
+gcp_dataset = "offline_sales"
 
 # (a) standard OMS columns
 
@@ -60,8 +60,8 @@ default_data_warehouse_columns = [
     "brand_product_specific",
 ]
 
-def post_process_Offline_Sales_Gideon(df):
-    """Convert columns for Offline Sales (GIDEON) dataset to CDL column names"""
+def post_process_Offline_Sales(df):
+    """Convert columns for Offline Sales dataset to CDL column names"""
 
     # (1) Order-level columns
     df.rename(columns={"No Faktur": "OrID"}, inplace=True)
@@ -139,7 +139,7 @@ def post_process_Offline_Sales_Gideon(df):
         how="left",
     )
 
-    # (3) GIDEON Specialty Retailer
+    # (3) Retailer
     df["Retailer"] = "GT"
     df["Retailer_Segment"] = "GT"
 
@@ -193,4 +193,70 @@ def post_process_Offline_Sales_Gideon(df):
     df.loc[returned, "destination_type"] = "DIST"
 
     return df
+def main(
+    project_cy_code,
+    project_dept_code,
+    project_env_code,
+    dataset,
+    table,
+    account_name,
+    website_name,
+    Retailer_Locations,
+    Distributor,
+    column_salesman,
+    country_id,
+    date_column_to_add_period_metrics,
+    date_format,
+    final_columns,
+):
+    """Generate cleaned dataset for each e-commerce website"""
 
+    # (1) Read order dataset
+    project = (
+        "project-gcp-" + project_cy_code + "-" + project_dept_code + "-" + project_env_code
+    )
+    df = read_from_bigquery(project=project, dataset=dataset, table=table)
+
+    if df.shape[0] == 0:
+        print("no data found")
+
+        # (2) Add the source of the data
+        return
+    df["account"] = account_name
+    df["e_commerce_website"] = website_name
+    df["country_id"] = country_id
+    df["Retailer_Locations"] = Retailer_Locations
+    df["Distributor"] = Distributor
+
+    # (3) Add period metrics
+    df["date_without_time"] = (
+        df[date_column_to_add_period_metrics].str.split(" ").str[0]
+    )
+    df[date_column_to_add_period_metrics] = pd.to_datetime(
+        df["date_without_time"], format=date_format
+    )
+    df = add_period_metrics(df, date_column_to_add_period_metrics, "%Y-%m-01")
+    df["order_date"] = df[date_column_to_add_period_metrics].dt.date
+
+    # (4) Add Salesman flag
+    if (
+        column_salesman is None
+        or column_salesman == "NULL"
+        or column_salesman not in df.columns
+    ):
+        df["Use_Salesman"] = "No"
+    else:
+        df["Use_Salesman"] = df[column_salesman].apply(
+            lambda x: "Yes" if str(x).strip() != "" else "No"
+        )
+
+    # (5) Unique post-processing
+
+    if website_name == "Offline_Sales":
+        df = post_process_Offline_Sales(df)
+    else:
+        print("no_unique_post_processing_steps_found")
+
+    output = df[final_columns]
+
+    return output
