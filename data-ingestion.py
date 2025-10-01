@@ -16,7 +16,7 @@ import constants
 # (2) Set run parameters
 
 gcp_dataset = "offline_sales"
-refresh_date = pd.Timestamp(pd.Timestamp.now(), tz="Asia/Indonesia")
+refresh_date = pd.Timestamp(pd.Timestamp.now(), tz="Asia/Jakarta")
 
 ###############################################################
 
